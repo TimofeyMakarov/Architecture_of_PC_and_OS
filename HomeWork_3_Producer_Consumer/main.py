@@ -99,10 +99,11 @@ if __name__ == "__main__":
     producer3 = threading.Thread(target=producer)
 
     # Запускаем потоки
-    consumer1.start()
-    consumer2.start()
-    consumer3.start()
-    consumer4.start()
-    producer1.start()
-    producer2.start()
-    producer3.start()
+    with lock:
+        consumer1.start()
+        consumer2.start()
+        consumer3.start()
+        consumer4.start()
+        producer1.start()
+        producer2.start()
+        producer3.start()
