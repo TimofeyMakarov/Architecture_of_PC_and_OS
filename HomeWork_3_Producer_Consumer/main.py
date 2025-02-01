@@ -3,6 +3,8 @@ from queue import Queue
 from PIL import Image, ImageOps, UnidentifiedImageError
 import threading
 import os
+import datetime
+start = datetime.datetime.now()
 
 lock = threading.Lock()
 paths_queue = Queue()
@@ -64,46 +66,66 @@ def consumer():
             ImageOps.invert(image).show()
 
 
+def one_thread(arr):
+    for i in range(len(arr)):
+        image = Image.open(arr[i])
+        if image.mode == 'RGBA':
+            r, g, b, a = image.split()
+            rgb_image = Image.merge('RGB', (r, g, b))
+            ImageOps.invert(rgb_image).show()
+        else:
+            ImageOps.invert(image).show()
+
+
 if __name__ == "__main__":
+
+    print ("Please enter the number of threads: ", end = "")
+    num_thread = input()
+
     try:
-        number_of_images = int(input("Please, enter the number of images: "))
-        if number_of_images <= 0:
-            raise ValueError('invalid number of images')
-    except ValueError as error:
-        print(f'Sorry, invalid input. Your error: {error}')
-        exit(0)
+        val = int(num_thread)
+    except ValueError:
+        print("That is not an int!")
+        exit()
+    if int(num_thread) < 1:
+        print("The number of threads should be more than 0!")
+        exit()
 
-    print("Please, enter the path for each image:")
-    for i in range(number_of_images):
-        try:
-            print(str(i + 1) + ": ", end="")
-            path = input()
-            if os.path.exists(path):  # проверка существования пути
-                paths_queue.put(path)
-            else:
-                number_of_images -= 1
-                raise ValueError('The file does not exist')
-        except ValueError as er:
-            print(f'Sorry, but you entered wrong path: {path} : {er}')
-            i -= 1
+    threads = [] # список путей до фотографий (для однопоточной программы)
 
-    # 3 потока producer и 4 потока consumer
-    # создание потоков
-    consumer1 = threading.Thread(target=consumer)
-    consumer2 = threading.Thread(target=consumer)
-    consumer3 = threading.Thread(target=consumer)
-    consumer4 = threading.Thread(target=consumer)
+    print("Please, enter the path to the folder from which all jpg and png images will be read: ", end = "")
+    path = input()
+    if not os.path.isdir(path):
+        print(f"{path} is a not directory")
+        exit()
+    for root, dirs, files in os.walk(path):
+        for file in files:
+            if file.endswith('.png') or file.endswith('.jpg'):
+                if int(num_thread) == 1:
+                    threads.append(os.path.join(root, file))
+                else:
+                    paths_queue.put(os.path.join(root, file))
+                    number_of_images += 1
 
-    producer1 = threading.Thread(target=producer)
-    producer2 = threading.Thread(target=producer)
-    producer3 = threading.Thread(target=producer)
+    if int(num_thread) == 1:
+        one_thread(threads)
+    elif int(num_thread)%2 == 0:
+        count = int(num_thread)//2
+        for n in range(count):
+            t = threading.Thread(target=consumer)
+            t.start()
+        for n in range(count):
+            t = threading.Thread(target=producer)
+            t.start()
+    else:
+        cons = int(num_thread)//2 + 1
+        prod = int(num_thread) - cons
+        for n in range(cons):
+            t = threading.Thread(target=consumer)
+            t.start()
+        for n in range(prod):
+            t = threading.Thread(target=producer)
+            t.start()
 
-    # Запускаем потоки
-    with lock:
-        consumer1.start()
-        consumer2.start()
-        consumer3.start()
-        consumer4.start()
-        producer1.start()
-        producer2.start()
-        producer3.start()
+    finish = datetime.datetime.now()
+    print('Время работы: ' + str(finish - start))
