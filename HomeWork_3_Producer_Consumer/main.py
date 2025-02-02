@@ -8,7 +8,7 @@ import datetime
 lock = threading.Lock()
 event = threading.Event()
 paths_queue = Queue()
-images_queue = Queue(maxsize=2)
+images_queue = Queue(maxsize=50)
 number_of_images = 0
 number_of_processed_paths = 0
 number_of_processed_images = 0
@@ -27,7 +27,7 @@ def producer():
                     image = Image.open(paths_queue.get())
                     while images_queue.full():  # Проверка на заполненность
                         lock.release()  # Освобождаем блокировку, чтобы другие потоки могли работать
-                        time.sleep(1)  # Ждём одну секунду, чтобы проверить на заполненность снова
+                        time.sleep(0.1)  # Ждём одну секунду, чтобы проверить на заполненность снова
                         lock.acquire()  # Снова захватывается блокировка
                     images_queue.put(image)
                 except FileNotFoundError:
@@ -62,10 +62,10 @@ def consumer():
         if image.mode == 'RGBA':
             r, g, b, a = image.split()
             rgb_image = Image.merge('RGB', (r, g, b))
-            # ImageOps.invert(rgb_image).show()
+            ImageOps.invert(rgb_image).show()
 
-        # else:
-            # ImageOps.invert(image).show()
+        else:
+            ImageOps.invert(image).show()
 
         with lock:
             number_of_processed_images += 1
@@ -79,9 +79,9 @@ def one_thread(arr):
         if image.mode == 'RGBA':
             r, g, b, a = image.split()
             rgb_image = Image.merge('RGB', (r, g, b))
-            # ImageOps.invert(rgb_image).show()
-        # else:
-            # ImageOps.invert(image).show()
+            ImageOps.invert(rgb_image).show()
+        else:
+            ImageOps.invert(image).show()
     event.set()
 
 
@@ -119,23 +119,16 @@ if __name__ == "__main__":
 
     if int(num_thread) == 1:
         one_thread(threads)
-    elif int(num_thread)%2 == 0:
-        count = int(num_thread)//2
-        for n in range(count):
-            t = threading.Thread(target=consumer)
-            t.start()
-        for n in range(count):
-            t = threading.Thread(target=producer)
-            t.start()
+
     else:
-        cons = int(num_thread)//2 + 1
-        prod = int(num_thread) - cons
-        for n in range(cons):
-            t = threading.Thread(target=consumer)
-            t.start()
-        for n in range(prod):
-            t = threading.Thread(target=producer)
-            t.start()
+        with lock:
+            for n in range(int(num_thread)):
+                if n % 3 == 1:
+                    t = threading.Thread(target=producer)
+                    t.start()
+                else:
+                    t = threading.Thread(target=consumer)
+                    t.start()
 
     event.wait()
     finish = datetime.datetime.now()
