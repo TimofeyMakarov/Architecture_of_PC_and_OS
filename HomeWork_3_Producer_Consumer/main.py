@@ -4,7 +4,6 @@ from PIL import Image, ImageOps, UnidentifiedImageError
 import threading
 import os
 import datetime
-start = datetime.datetime.now()
 
 lock = threading.Lock()
 event = threading.Event()
@@ -63,10 +62,10 @@ def consumer():
         if image.mode == 'RGBA':
             r, g, b, a = image.split()
             rgb_image = Image.merge('RGB', (r, g, b))
-            ImageOps.invert(rgb_image).show()
+            # ImageOps.invert(rgb_image).show()
 
-        else:
-            ImageOps.invert(image).show()
+        # else:
+            # ImageOps.invert(image).show()
 
         with lock:
             number_of_processed_images += 1
@@ -80,9 +79,9 @@ def one_thread(arr):
         if image.mode == 'RGBA':
             r, g, b, a = image.split()
             rgb_image = Image.merge('RGB', (r, g, b))
-            ImageOps.invert(rgb_image).show()
-        else:
-            ImageOps.invert(image).show()
+            # ImageOps.invert(rgb_image).show()
+        # else:
+            # ImageOps.invert(image).show()
     event.set()
 
 
@@ -115,6 +114,8 @@ if __name__ == "__main__":
                 else:
                     paths_queue.put(os.path.join(root, file))
                     number_of_images += 1
+
+    start = datetime.datetime.now()
 
     if int(num_thread) == 1:
         one_thread(threads)
