@@ -7,11 +7,12 @@ import datetime
 start = datetime.datetime.now()
 
 lock = threading.Lock()
+event = threading.Event()
 paths_queue = Queue()
 images_queue = Queue(maxsize=2)
 number_of_images = 0
 number_of_processed_paths = 0
-
+number_of_processed_images = 0
 
 def producer():
     global lock
@@ -40,9 +41,11 @@ def producer():
 
 def consumer():
     global lock
+    global event
     global images_queue
     global number_of_images
     global number_of_processed_paths
+    global number_of_processed_images
     # Consumer работает пока кол-во обработанных путей < кол-ва переданных путей
     while True:
         # Выполняется цикл while, пока из очереди не удастся извлечь изображение
@@ -65,6 +68,11 @@ def consumer():
         else:
             ImageOps.invert(image).show()
 
+        with lock:
+            number_of_processed_images += 1
+            if number_of_processed_images == number_of_images:
+                event.set()
+
 
 def one_thread(arr):
     for i in range(len(arr)):
@@ -75,6 +83,7 @@ def one_thread(arr):
             ImageOps.invert(rgb_image).show()
         else:
             ImageOps.invert(image).show()
+    event.set()
 
 
 if __name__ == "__main__":
@@ -127,5 +136,6 @@ if __name__ == "__main__":
             t = threading.Thread(target=producer)
             t.start()
 
+    event.wait()
     finish = datetime.datetime.now()
     print('Время работы: ' + str(finish - start))
