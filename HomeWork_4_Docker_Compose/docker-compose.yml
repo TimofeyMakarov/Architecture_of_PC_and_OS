@@ -1,0 +1,67 @@
+services:
+  # Контейнер "db" с базой данных, управляемой PostgreSQL
+  db:
+    # В качестве образа ипользуется postgres с dockerhub'а
+    image: 'postgres'
+    # В случае ошибок контейнер будет автоматически перезапускаться
+    restart: always
+    # Указываем, что в файле .env текущей директории хранятся переменные среды, т.е.:
+    # - POSTGRES_PASSWORD (пароль)
+    # - POSTGRES_USER (имя пользователя)
+    # - POSTGRES_DB (имя базы данных)
+    env_file:
+      - .env
+    # Подключаем контейнер db к сети my_network (объявлена ниже), к которой
+    # подключены и остальные контейнеры. Это сделано для удобства взаимодействия
+    # контейнеров друг с другом.
+    ports:
+      - '5432:5432'
+    networks:
+      my_network:
+        # Указав алиас внутри сети мы по сути указываем, что отправлять запросы
+        # этому контейнеру можно по URL "http://db:5432" (порт 5432, так как
+        # postgres по умолчанию прослушивает именно это порт)
+        aliases:
+          - db
+    # Подключение volume (по-русски "тома") означает следующее:
+    # папка db_data из текущей директории будет отождествляться 
+    # с папкой var/lib/postgresql/data из контейнера. Это позволит сохранять все
+    # данные из базы данных даже после остановки контейнера. При этом db_data
+    # создастся автоматически, если её не найдётся в текущей директории
+    volumes:
+      - ${PWD}/db_data:/var/lib/postgresql/data
+
+  # Контейнер "pgadmin" для предоставления интерфейса взаимодействия с базой данных
+  pgadmin:
+    image: 'dpage/pgadmin4'
+    env_file:
+      - .env
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+
+  app:
+    build: app/
+    command: python ./app.py
+    networks:
+      my_network:
+        aliases:
+          - app
+
+  web:
+    image: 'nginx:alpine'
+    networks:
+      my_network:
+        aliases:
+          - web
+    volumes:
+      - ${PWD}/nginx/html:/usr/share/nginx/html
+    ports:
+      - '8080:80'
+
+volumes:
+  db_data:
+
+networks:
+   my_network:

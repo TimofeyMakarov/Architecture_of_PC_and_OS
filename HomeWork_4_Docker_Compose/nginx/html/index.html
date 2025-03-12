@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архитектура</title>
+</head>
+<body>
+    <h1>Отправить SQL-запрос</h1>
+    <button id="sendSql">Выполнить SELECT</button> # Кнопка для отправки SQL-запроса
+
+    <script>
+        document.getElementById('sendSql').addEventListener('click', function() {
+            # SQL-запрос, который будет отправлен
+            const sqlQuery = "SELECT * FROM table;";
+
+            # Отправка запроса в контейнер
+            fetch('http://app:3033', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: sqlQuery }) # Отправляем SQL-запрос
+            })
+                # если хотим выводить итог
+            .then(response => response.json())
+            .then(data => {
+                console.log('Ответ от сервера:', data);
+                alert('Запрос выполнен! Результат в консоли.');
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при выполнении запроса.');
+            });
+        });
+    </script>
+</body>
