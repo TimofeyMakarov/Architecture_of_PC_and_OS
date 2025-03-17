@@ -8,4 +8,5 @@ class PostHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.end_headers()
 
+print("ok")
 HTTPServer(('', 3033), PostHandler).serve_forever()
