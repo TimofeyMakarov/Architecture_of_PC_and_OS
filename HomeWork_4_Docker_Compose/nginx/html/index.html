@@ -11,14 +11,14 @@
 
     <script>        
 	document.getElementById('selectButton').addEventListener('click', function() {
-            alert('Everything is okey');
+            alert('Вы нажали на кнопку!');
             const sqlQuery = "SELECT * FROM table;";
             fetch('http://localhost:80/api/SELECT', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ query: sqlQuery }) # Отправляем SQL-запр>
+                body: JSON.stringify({ query: sqlQuery })})
             .then(response => response.json())
             .then(data => {
                 console.log('Ответ от сервера:', data);
@@ -28,7 +28,7 @@
                 console.error('Ошибка:', error);
                 alert('Произошла ошибка при выполнении запроса.');
             });
-            alert('Everything is okey!');
+            alert('Всё хорошо!');
         });        
     </script>
 </body>
