@@ -13,11 +13,10 @@
 	document.getElementById('selectButton').addEventListener('click', function() {
             alert('Вы нажали на кнопку!');
             const sqlQuery = "SELECT * FROM table;";
-            fetch('http://localhost:80/api/SELECT', {
+            fetch('http://localhost:8080/api/SELECT', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': 'http://localhost:80'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ query: sqlQuery })})
             .then(response => response.json())
