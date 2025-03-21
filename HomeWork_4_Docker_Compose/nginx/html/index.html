@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,29 +8,33 @@
 </head>
 <body>
     <!-- <h1>Отправить SQL-запрос</h1> -->
-    <button id="selectButton">Выполнить SELECT</button>
+    <button id="testButton">TEST BUTTON</button>
 
-    <script>        
-	document.getElementById('selectButton').addEventListener('click', function() {
-            alert('Вы нажали на кнопку!');
-            const sqlQuery = "SELECT * FROM table;";
-            fetch('http://localhost:8080/api/SELECT', {
+    <script>
+        document.getElementById('testButton').addEventListener('click', function() {
+
+            <!-- const sqlQuery = "SELECT * FROM table;";-->
+            fetch('http://localhost:8080/api/TEST', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ query: sqlQuery })})
-            .then(response => response.json())
+                body: JSON.stringify({ message: "a test request" })})
+            .then(response =>{
+                if (!response.ok) {
+                        throw new Error('ошибка сети');
+                }
+                return response.json();
+                })
             .then(data => {
                 console.log('Ответ от сервера:', data);
-                alert('Запрос выполнен! Результат в консоли.');
+                alert('Запрос выполнен! Результат:.'+ JSON.stringify(data));
             })
             .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при выполнении запроса.');
+                console.error('Ошибочка:', error);
+                alert('Произошла ошибка при выполнении запроса.'+error.message);
             });
-            alert('Всё хорошо!');
-        });        
+        });
     </script>
 </body>
 </html>
