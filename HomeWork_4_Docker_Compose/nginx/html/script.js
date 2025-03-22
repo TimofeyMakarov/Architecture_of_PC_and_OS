@@ -1,5 +1,5 @@
 function sendRequest(inputMessage){
-    fetch('http://192.168.31.59:8080/api/', {
+    fetch('http://localhost:8080/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
