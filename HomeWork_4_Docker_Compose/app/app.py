@@ -49,9 +49,9 @@ def get_data():
     conn.close()
 
     # Преобразуем данные в словарь
-    result = [{'name': row[0], 'number': row[1], 'note': row[2]} for row in data]
+    result = [{'name': row[0], 'number': row[1], 'notes': row[2]} for row in data]
     for row in result:
-        print(row['name'], row['number'], row['note'])
+        print(row['name'], row['number'], row['notes'])
     return result
 
 # Запуск сервера

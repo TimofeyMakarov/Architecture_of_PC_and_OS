@@ -1,5 +1,5 @@
 function sendRequest(inputMessage){
-    fetch('http://localhost:8080/api/', {
+    fetch('http://192.168.31.59:8080/api/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -13,9 +13,9 @@ function sendRequest(inputMessage){
             data.forEach(row => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${row.id}</td>
                     <td>${row.name}</td>
-                    <td>${row.description}</td>
+                    <td>${row.number}</td>
+                    <td>${row.notes}</td>
                 `;
                 tableBody.appendChild(tr);
             });
