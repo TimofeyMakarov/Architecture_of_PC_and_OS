@@ -1,40 +1,42 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Архитектура</title>
+    <style>
+        table {
+            width: 90%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <!-- <h1>Отправить SQL-запрос</h1> -->
     <button id="testButton">TEST BUTTON</button>
+    <h1>Таблица данных</h1>
+    <button id="Select">Select</button>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>ФИО</th>
+                <th>Номер телефона</th>
+                <th>Заметка</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Данные будут вставлены сюда -->
+        </tbody>
+    </table>
 
-    <script>
-        document.getElementById('testButton').addEventListener('click', function() {
-
-            <!-- const sqlQuery = "SELECT * FROM table;";-->
-            fetch('http://localhost:8080/api/TEST', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ message: "a test request" })})
-            .then(response =>{
-                if (!response.ok) {
-                        throw new Error('ошибка сети');
-                }
-                return response.json();
-                })
-            .then(data => {
-                console.log('Ответ от сервера:', data);
-                alert('Запрос выполнен! Результат:.'+ JSON.stringify(data));
-            })
-            .catch(error => {
-                console.error('Ошибочка:', error);
-                alert('Произошла ошибка при выполнении запроса.'+error.message);
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
