@@ -24,7 +24,7 @@ services:
         aliases:
           - db
     # Подключение volume (по-русски "тома") означает следующее:
-    # папка db_data из текущей директории будет отождествляться 
+    # папка db_data из текущей директории будет отождествляться
     # с папкой var/lib/postgresql/data из контейнера. Это позволит сохранять все
     # данные из базы данных даже после остановки контейнера. При этом db_data
     # создастся автоматически, если её не найдётся в текущей директории
@@ -42,8 +42,7 @@ services:
       - db
 
   app:
-    build: app/
-    command: python ./app.py
+    build: './app'
     networks:
       my_network:
         aliases:
@@ -57,8 +56,11 @@ services:
           - web
     volumes:
       - ${PWD}/nginx/html:/usr/share/nginx/html
+      - ${PWD}/nginx:/etc/nginx
     ports:
       - '8080:80'
+    depends_on:
+      - app
 
 volumes:
   db_data:

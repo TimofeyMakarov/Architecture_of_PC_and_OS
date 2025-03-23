@@ -3,33 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Архитектура</title>
+    <title>Telephone directory</title>
+    <style>
+        table {
+            width: 90%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+         }
+
+       .modal-content {
+            background-color: #fefefe;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            margin-left: 400px;
+         }
+
+        .close {
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, textarea {
+             margin-bottom: 10px;
+             padding: 8px;
+             border: 1px solid #ccc;
+             border-radius: 4px;
+       }
+       button[type="submit"] {
+             background-color: #4CAF50;
+             color: white;
+             padding: 10px;
+             border: none;
+             border-radius: 4px;
+             cursor: pointer;
+       }
+       button[type="submit"]:hover {
+             background-color: #45a049;
+       }
+
+    </style>
 </head>
 <body>
-    <!-- <h1>Отправить SQL-запрос</h1> -->
-    <button id="selectButton">Выполнить SELECT</button>
+    <h1>Телефонный справочник</h1>
+    <button id="Insert">Создать запись</button>
+    <button id="Delete">Удалить запись</button>
+    <button id="Edit">Редактировать запись</button>
+    <br><br>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>ФИО</th>
+                <th>Номер телефона</th>
+                <th>Заметка</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Данные будут вставлены сюда -->
+        </tbody>
+    </table>
 
-    <script>        
-	document.getElementById('selectButton').addEventListener('click', function() {
-            alert('Вы нажали на кнопку!');
-            const sqlQuery = "SELECT * FROM table;";
-            fetch('http://localhost:8080/api/SELECT', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ query: sqlQuery })})
-            .then(response => response.json())
-            .then(data => {
-                console.log('Ответ от сервера:', data);
-                alert('Запрос выполнен! Результат в консоли.');
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при выполнении запроса.');
-            });
-            alert('Всё хорошо!');
-        });        
-    </script>
+
+    <!--окошко для создания новой записи -->
+    <div id="insertModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Создать запись</h2>
+            <form id="insertForm">
+                <label for="insertName">ФИО:</label>
+                <input type="text" id="insertName" name="insertName" required><br><br>
+                 <label for="insertNumber">Номер телефона:</label>
+                 <input type="text" id="insertNumber" name="insertNumber" required><br><br>
+                 <label for="insertNotes">Заметка:</label>
+                 <input type="text" id="insertNotes" name="insertNotes"><br><br>
+                 <button type="submit">Создать</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно для удаления записи -->
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Удалить запись</h2>
+                <form id="deleteForm">
+                    <label for="deleteColumn">Выберите столбец</label>
+                    <select id="deleteColumn" name="deleteColumn" required>
+                    <option value="name">ФИО</option>
+                    <option value="number">Номер телефона</option>
+                    <option value="notes">Заметка</option>
+                </select><br><br>
+                    <label for="deleteId">Значение поля, по которому будет произведено удаление</label><br><br>
+                    <input type="text" id="deleteId" name="deleteId" required><br><br>
+                    <button type="submit">Удалить</button>
+                </form>
+            </div>
+        </div>
+
+
+    <!-- Модальное окно для редактирования записи -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Редактировать запись</h2>
+            <form id="editForm">
+                <label for="editId">Текущий номер телефона:</label>
+                <input type="text" id="editId" name="editId" required><br><br>
+                <label for="editName">ФИО:</label>
+                <input type="text" id="editName" name="editName" required><br><br>
+                <label for="editNumber">Новый номер телефона:</label>
+                <input type="text" id="editNumber" name="editNumber" required><br><br>
+                <label for="editNotes">Заметка:</label>
+                <input type="text" id="editNotes" name="editNotes"><br><br>
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+
+   <script src="script.js"></script>
 </body>
 </html>
