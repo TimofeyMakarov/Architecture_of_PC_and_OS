@@ -88,7 +88,8 @@ class PostHandler(BaseHTTPRequestHandler):
             name = post_data['name']
             number = post_data['number']
             notes = post_data['notes']
-            request = "UPDATE telephoneDirectory SET name = '" + name + "', number = '" + number + "', notes = '" + notes + "' WHERE number = '" + old_number + "';"
+            request = "UPDATE telephoneDirectory SET name = '" + name + "', number = '" + number + "', notes = '" + notes + "' WHERE number = '" + old_number + "';" 
+            print(request)
             if send_request(request):
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')

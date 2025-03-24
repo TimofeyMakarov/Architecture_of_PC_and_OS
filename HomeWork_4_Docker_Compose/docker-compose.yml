@@ -31,16 +31,6 @@ services:
     volumes:
       - ${PWD}/db_data:/var/lib/postgresql/data
 
-  # Контейнер "pgadmin" для предоставления интерфейса взаимодействия с базой данных
-  pgadmin:
-    image: 'dpage/pgadmin4'
-    env_file:
-      - .env
-    ports:
-      - "8000:80"
-    depends_on:
-      - db
-
   app:
     build: './app'
     networks:
